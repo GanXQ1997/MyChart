@@ -17,7 +17,7 @@
 #include <QtCharts/QChart>
 #include <QtCharts/QChartView>
 #include <QtCore/QtMath>
-#include <QtCore/QRandomGenerator>
+//#include <QtCore/QRandomGenerator>
 #include <QtCharts/QLineSeries>
 
 #include <QDateTime>
@@ -41,10 +41,14 @@ private:
     void CreateToolBar();
     void CreateMenu();
     void CreateStatusBar();
+    void CreateDockWidget();
     QWidget* CreateWidget();
-    QWidget* CreateTree();
-    QChartView* CreateChart();
-
+    QWidget* CreateTriggerWidget();
+    QWidget* CreateSampleWidget();
+    QWidget* CreateDebugWidget();
+    QWidget* CreateChanWidget();
+    QChartView *CreateFreqChart();
+    QChartView *CreateTimeChart();
     QLabel* TimerLabel;
 public slots:
     void TimeUpdate();

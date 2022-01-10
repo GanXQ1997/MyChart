@@ -7,41 +7,7 @@ MyChart::MyChart()
     CreateMenu();
     CreateToolBar();
     CreateStatusBar();
-
-    QWidget* m_Widget = new QWidget();
-    this->setCentralWidget(m_Widget);
-    QGridLayout *GridLayout = new QGridLayout(m_Widget);
-
-    QWidget *Left_Table_Box = CreateTree();
-    QWidget *Right_Table_Box = CreateTree();
-    QWidget *Bottom_Table_Box = CreateTree();
-    QWidget *Chart_Table_Box = CreateChart();
-
-    QDockWidget *Bottom_dockWidget = new QDockWidget(tr("配置信息"));   //创建锚接部件
-    Bottom_dockWidget->setAllowedAreas(Qt::AllDockWidgetAreas);  //锚接部件 允许停靠的区域，左右
-    Bottom_dockWidget->setWidget(Bottom_Table_Box);  //设置锚接部件的内容 TreeWidget
-    addDockWidget(Qt::BottomDockWidgetArea, Bottom_dockWidget);
-
-    this->setDockNestingEnabled(true);
-    QDockWidget *Right_dockWidget = new QDockWidget(tr("配置信息"));   //创建锚接部件
-    QDockWidget *Left_dockWidget = new QDockWidget(tr("配置信息"));   //创建锚接部件
-    //dockWidget->setObjectName("dockWidget test"); //标识名
-    Right_dockWidget->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);  //锚接部件 允许停靠的区域，左右
-    Left_dockWidget->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);  //锚接部件 允许停靠的区域，左右
-    Right_dockWidget->setWidget(Right_Table_Box);  //设置锚接部件的内容 TreeWidget
-    Left_dockWidget->setWidget(Left_Table_Box);  //设置锚接部件的内容 TreeWidget
-    addDockWidget(Qt::RightDockWidgetArea, Right_dockWidget);
-    addDockWidget(Qt::LeftDockWidgetArea, Left_dockWidget);
-
-
-
-    GridLayout->addWidget(Chart_Table_Box,0,0,3,3);
-//    GridLayout->addWidget(Bottom_Table_Box,3,0,1,3);
-//    GridLayout->addWidget(Left_Table_Box,0,0,4,1);
-//    GridLayout->addWidget(Right_Table_Box,0,4,4,1);
-//    GridLayout->addWidget(Bottom_Table_Box,3,1,1,3);
-//    GridLayout->addWidget(Chart_Table_Box,0,1,3,3);
-
+    CreateDockWidget();
 }
 MyChart::~MyChart()
 {
@@ -59,6 +25,58 @@ void MyChart::SetMyStyle()
     this->setWindowTitle("JNOSC");
     this->resize(1000,600);
     this->setMinimumSize(600,400);
+}
+
+void MyChart::CreateDockWidget()
+{
+    //this->setCentralWidget(m_Widget);
+
+    QWidget *Left_Table_Box = CreateTriggerWidget();
+    QWidget *Right_Table_Box = CreateSampleWidget();
+    QWidget *Debug_Table_Box = CreateDebugWidget();
+    QWidget *Chan_Table_Box = CreateChanWidget();
+    QChartView *TChart_Table_Box = CreateTimeChart();
+    QChartView *FChart_Table_Box = CreateFreqChart();
+
+    this->setDockNestingEnabled(true);
+
+    QDockWidget *Left_dockWidget = new QDockWidget(tr("触发配置"));   //创建锚接部件
+    Left_dockWidget->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);  //锚接部件 允许停靠的区域，左右
+    Left_dockWidget->setWidget(Left_Table_Box);  //设置锚接部件的内容 TreeWidget
+    addDockWidget(Qt::LeftDockWidgetArea, Left_dockWidget);
+
+    QDockWidget *Right_dockWidget = new QDockWidget(tr("采集配置"));
+    //dockWidget->setObjectName("dockWidget test"); //标识名
+    Right_dockWidget->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
+    Right_dockWidget->setWidget(Right_Table_Box);
+    addDockWidget(Qt::RightDockWidgetArea, Right_dockWidget);
+
+    QDockWidget *Time_dockWidget = new QDockWidget(tr("波形显示"));
+    Time_dockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    Time_dockWidget->setWidget(TChart_Table_Box);
+    addDockWidget(Qt::TopDockWidgetArea, Time_dockWidget);
+
+    QDockWidget *Freq_dockWidget = new QDockWidget(tr("频率显示"));
+    Freq_dockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    Freq_dockWidget->setWidget(FChart_Table_Box);
+    addDockWidget(Qt::TopDockWidgetArea, Freq_dockWidget);
+
+    QDockWidget *Debug_dockWidget = new QDockWidget(tr("调试配置"));
+    Debug_dockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    Debug_dockWidget->setWidget(Debug_Table_Box);
+    addDockWidget(Qt::BottomDockWidgetArea, Debug_dockWidget);
+
+    QDockWidget *Chan_dockWidget = new QDockWidget(tr("通道配置"));
+    Chan_dockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    Chan_dockWidget->setWidget(Debug_Table_Box);
+    addDockWidget(Qt::BottomDockWidgetArea, Chan_dockWidget);
+
+
+    splitDockWidget(Left_dockWidget,Time_dockWidget,Qt::Horizontal);
+    splitDockWidget(Time_dockWidget,Right_dockWidget,Qt::Horizontal);
+    splitDockWidget(Time_dockWidget,Debug_dockWidget,Qt::Vertical);
+    tabifyDockWidget(Time_dockWidget, Freq_dockWidget);
+    tabifyDockWidget(Debug_dockWidget, Chan_dockWidget);
 }
 
 void MyChart::CreateToolBar()
@@ -127,13 +145,13 @@ QWidget* MyChart::CreateWidget()
     return m_widget;
 }
 
-QWidget* MyChart::CreateTree()
+QWidget* MyChart::CreateTriggerWidget()
 {
-        QWidget* m_Widget = new QWidget();
+    QWidget* m_Widget = new QWidget();
     QTreeWidget *m_tree = new QTreeWidget(m_Widget);
 
     QTreeWidgetItem* topitem = new QTreeWidgetItem;
-    topitem->setText(0,"TopItem");
+    topitem->setText(0,"触发信息");
     m_tree->addTopLevelItem(topitem);
     QStringList  str;
     str << "ChildItem1";
@@ -146,18 +164,106 @@ QWidget* MyChart::CreateTree()
     return m_tree;
 }
 
-QChartView * MyChart::CreateChart()
+QWidget* MyChart::CreateSampleWidget()
 {
+    QWidget* m_Widget = new QWidget();
+    QTreeWidget *m_tree = new QTreeWidget(m_Widget);
+
+    QTreeWidgetItem* topitem = new QTreeWidgetItem;
+    topitem->setText(0,"采集信息");
+    m_tree->addTopLevelItem(topitem);
+    QStringList  str;
+    str << "ChildItem1";
+    QTreeWidgetItem* childItem1 = new QTreeWidgetItem(topitem, str);
+    m_tree->setHeaderHidden(true);
+    //m_tree->setHeaderLabel("配置信息");
+    m_tree->setRootIsDecorated( false ); //去掉虚线边框
+    m_tree->setFrameStyle(QFrame::NoFrame); //去掉边框
+    m_tree->setStyleSheet("QTreeView::branch {image:none;}"); //去掉子节点的虚框
+    return m_tree;
+}
+
+QWidget* MyChart::CreateDebugWidget()
+{
+    QWidget* m_Widget = new QWidget();
+    QTreeWidget *m_tree = new QTreeWidget(m_Widget);
+
+    QTreeWidgetItem* topitem = new QTreeWidgetItem;
+    topitem->setText(0,"调试信息");
+    m_tree->addTopLevelItem(topitem);
+    QStringList  str;
+    str << "ChildItem1";
+    QTreeWidgetItem* childItem1 = new QTreeWidgetItem(topitem, str);
+    m_tree->setHeaderHidden(true);
+    //m_tree->setHeaderLabel("配置信息");
+    m_tree->setRootIsDecorated( false ); //去掉虚线边框
+    m_tree->setFrameStyle(QFrame::NoFrame); //去掉边框
+    m_tree->setStyleSheet("QTreeView::branch {image:none;}"); //去掉子节点的虚框
+    return m_tree;
+}
+
+QWidget* MyChart::CreateChanWidget()
+{
+    QWidget* m_Widget = new QWidget();
+    QTreeWidget *m_tree = new QTreeWidget(m_Widget);
+
+    QTreeWidgetItem* topitem = new QTreeWidgetItem;
+    topitem->setText(0,"通道设置");
+    m_tree->addTopLevelItem(topitem);
+    QStringList  str;
+    str << "ChildItem1";
+    QTreeWidgetItem* childItem1 = new QTreeWidgetItem(topitem, str);
+    m_tree->setHeaderHidden(true);
+    //m_tree->setHeaderLabel("配置信息");
+    m_tree->setRootIsDecorated( false ); //去掉虚线边框
+    m_tree->setFrameStyle(QFrame::NoFrame); //去掉边框
+    m_tree->setStyleSheet("QTreeView::branch {image:none;}"); //去掉子节点的虚框
+    return m_tree;
+}
+
+QChartView * MyChart::CreateTimeChart()
+{
+    //QWidget* m_Widget = new QWidget();
     QLineSeries *series = new QLineSeries();
     for (int i = 0; i < 500; i++) {
         QPointF p((qreal) i, qSin(M_PI / 50 * i) * 100);
-        p.ry() += QRandomGenerator::global()->bounded(20);
+        //p.ry() += QRandomGenerator::global()->bounded(20);
         *series << p;
     }
 
     QChart *chart = new QChart();
     chart->addSeries(series);
-    chart->setTitle("My Chart");
+    chart->setTitle("时域波形");
+    //chart->setAnimationOptions(QChart::AllAnimations);
+    chart->legend()->hide();
+    chart->createDefaultAxes();
+
+    QChartView *chartView = new QChartView();
+    chartView->setRenderHint(QPainter::Antialiasing);
+    chartView->setChart(chart);
+
+//    QMainWindow* m_chart = new QMainWindow();
+//    m_chart->setCentralWidget(chartView);
+//    m_chart->resize(400, 300);
+//    m_chart->grabGesture(Qt::PanGesture);
+//    m_chart->grabGesture(Qt::PinchGesture);
+    //m_chart->show();
+
+    return chartView;
+}
+
+QChartView * MyChart::CreateFreqChart()
+{
+    QLineSeries *series = new QLineSeries();
+    for (int i = 0; i < 500; i++) {
+        QPointF p((qreal) i, qSin(M_PI / 50 * i) * 100);
+        //p.ry() += QRandomGenerator::global()->bounded(20);
+        *series << p;
+    }
+
+    QChart *chart = new QChart();
+    chart->addSeries(series);
+    chart->setTitle("频域波形");
     //chart->setAnimationOptions(QChart::AllAnimations);
     chart->legend()->hide();
     chart->createDefaultAxes();
