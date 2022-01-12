@@ -42,33 +42,53 @@ void MyChart::CreateDockWidget()
 
     QDockWidget *Left_dockWidget = new QDockWidget(tr("触发配置"));   //创建锚接部件
     Left_dockWidget->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);  //锚接部件 允许停靠的区域，左右
+    Left_dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetClosable);
     Left_dockWidget->setWidget(Left_Table_Box);  //设置锚接部件的内容 TreeWidget
+    //Left_dockWidget->setFixedWidth(300);
+    Left_dockWidget->setMinimumWidth(150);
+    Left_dockWidget->setMaximumWidth(300);
     addDockWidget(Qt::LeftDockWidgetArea, Left_dockWidget);
 
     QDockWidget *Right_dockWidget = new QDockWidget(tr("采集配置"));
     //dockWidget->setObjectName("dockWidget test"); //标识名
     Right_dockWidget->setAllowedAreas(Qt::RightDockWidgetArea | Qt::LeftDockWidgetArea);
+    Right_dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetClosable);
     Right_dockWidget->setWidget(Right_Table_Box);
+    Right_dockWidget->setMinimumWidth(150);
+    Right_dockWidget->setMaximumWidth(300);
     addDockWidget(Qt::RightDockWidgetArea, Right_dockWidget);
 
     QDockWidget *Time_dockWidget = new QDockWidget(tr("波形显示"));
     Time_dockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    Time_dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
+    Time_dockWidget->setMinimumSize(500, 500);
     Time_dockWidget->setWidget(TChart_Table_Box);
     addDockWidget(Qt::TopDockWidgetArea, Time_dockWidget);
 
+    QToolBar* fileToolBar = addToolBar(tr("新建"));
+    QPushButton* bottom = new QPushButton("显示");
+    fileToolBar->addWidget(bottom);
+    Time_dockWidget->setTitleBarWidget(fileToolBar);
+
     QDockWidget *Freq_dockWidget = new QDockWidget(tr("频率显示"));
     Freq_dockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    Freq_dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable | QDockWidget::DockWidgetClosable);
+    Freq_dockWidget->setMinimumSize(500, 500);
     Freq_dockWidget->setWidget(FChart_Table_Box);
     addDockWidget(Qt::TopDockWidgetArea, Freq_dockWidget);
 
     QDockWidget *Debug_dockWidget = new QDockWidget(tr("调试配置"));
     Debug_dockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
+    Debug_dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetClosable);
+    Debug_dockWidget->setMaximumHeight(400);
     Debug_dockWidget->setWidget(Debug_Table_Box);
     addDockWidget(Qt::BottomDockWidgetArea, Debug_dockWidget);
 
     QDockWidget *Chan_dockWidget = new QDockWidget(tr("通道配置"));
     Chan_dockWidget->setAllowedAreas(Qt::TopDockWidgetArea | Qt::BottomDockWidgetArea);
-    Chan_dockWidget->setWidget(Debug_Table_Box);
+    Chan_dockWidget->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetClosable);
+    Chan_dockWidget->setMaximumHeight(400);
+    Chan_dockWidget->setWidget(Chan_Table_Box);
     addDockWidget(Qt::BottomDockWidgetArea, Chan_dockWidget);
 
 
@@ -108,7 +128,6 @@ void MyChart::CreateMenu()
 
     this->menuBar()->addMenu(tr("窗口"));//关闭锚接部件后打开部件
     this->menuBar()->addMenu(tr("关于"));
-
 }
 
 void MyChart::CreateStatusBar()
